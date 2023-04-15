@@ -116,11 +116,11 @@ FOB_list = ["BTCUSDT","BTCUSDT","BTCUSDT","BTCUSDT"]
 # print(FOD_list)
 # print("DONE")
 
-application = dash.Dash(__name__)
-server = application.server
+app = dash.Dash(__name__)
+server = app.server
 
 # Define the layout of the website
-application.layout = html.Div(
+app.layout = html.Div(
     [
         html.H1('My Lists'),
         html.Div(
@@ -144,6 +144,5 @@ application.layout = html.Div(
 )
 
 if __name__ == '__main__':
-    # application.run_server(debug=True)
-    application.debug = True
-    application.run()
+    app.run_server(debug=True)
+
