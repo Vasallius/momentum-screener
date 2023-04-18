@@ -6,10 +6,11 @@ import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 
+
+
 def ema(data, window):
     ema = data.ewm(span=window, adjust=False).mean()
     return ema
-
 
 def rsi_tradingview(ohlc: pd.DataFrame, period: int = 14, round_rsi: bool = True):
     delta = ohlc["close"].diff()
@@ -23,11 +24,9 @@ def rsi_tradingview(ohlc: pd.DataFrame, period: int = 14, round_rsi: bool = True
     down *= -1
     down = pd.Series.ewm(down, alpha=1/period).mean()
 
-    rsi = np.where(up == 0, 0, np.where(
-        down == 0, 100, 100 - (100 / (1 + up / down))))
+    rsi = np.where(up == 0, 0, np.where(down == 0, 100, 100 - (100 / (1 + up / down))))
 
     return np.round(rsi, 2) if round_rsi else rsi
-
 
 def fetch_data(symbol):
     # print(f"Processing {symbol}")
@@ -35,8 +34,7 @@ def fetch_data(symbol):
     response = requests.get(endpoint, params=params)
     data = response.json()
 
-    symbol_df = pd.DataFrame(data, columns=["timestamp", "open", "high", "low", "close", "volume", "close_time",
-                             "quote_asset_volume", "number_of_trades", "taker_buy_base_asset_volume", "taker_buy_quote_asset_volume", "ignore"])
+    symbol_df = pd.DataFrame(data, columns=["timestamp", "open", "high", "low", "close", "volume", "close_time", "quote_asset_volume", "number_of_trades", "taker_buy_base_asset_volume", "taker_buy_quote_asset_volume", "ignore"])
 
     symbol_df["timestamp"] = pd.to_datetime(symbol_df["timestamp"], unit="ms")
     symbol_df = symbol_df.set_index("timestamp")
@@ -51,17 +49,17 @@ def fetch_data(symbol):
     symbol_df["RSI14"] = rsi_tradingview(symbol_df)
 
     symbol_df = symbol_df.tail(2)
+    # symbol_df = symbol_df.tail(3).iloc[:-1]
 
-    symbol_df.index = pd.MultiIndex.from_product(
-        [[symbol], symbol_df.index], names=["symbol", "timestamp"])
+    symbol_df.index = pd.MultiIndex.from_product([[symbol], symbol_df.index], names=["symbol", "timestamp"])
 
     return symbol_df
-
 
 exchange_info_endpoint = "https://api.binance.com/api/v3/exchangeInfo"
 endpoint = "https://api.binance.com/api/v3/klines"
 
-
+exchange_info = requests.get(exchange_info_endpoint).json()
+# symbol_list = [s["symbol"] for s in exchange_info["symbols"] if s["symbol"].endswith("USDT")]
 symbol_list = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "BCCUSDT", "NEOUSDT", "LTCUSDT", "QTUMUSDT", "ADAUSDT", "XRPUSDT", "EOSUSDT", "TUSDUSDT", "IOTAUSDT", "XLMUSDT", "ONTUSDT", "TRXUSDT", "ETCUSDT", "ICXUSDT", "VENUSDT", "NULSUSDT", "VETUSDT", "PAXUSDT", "BCHABCUSDT", "BCHSVUSDT", "USDCUSDT", "LINKUSDT", "WAVESUSDT", "BTTUSDT", "USDSUSDT", "ONGUSDT", "HOTUSDT", "ZILUSDT", "ZRXUSDT", "FETUSDT", "BATUSDT", "XMRUSDT", "ZECUSDT", "IOSTUSDT", "CELRUSDT", "DASHUSDT", "NANOUSDT", "OMGUSDT", "THETAUSDT", "ENJUSDT", "MITHUSDT", "MATICUSDT", "ATOMUSDT", "TFUELUSDT", "ONEUSDT", "FTMUSDT", "ALGOUSDT", "USDSBUSDT", "GTOUSDT", "ERDUSDT", "DOGEUSDT", "DUSKUSDT", "ANKRUSDT", "WINUSDT", "COSUSDT", "NPXSUSDT", "COCOSUSDT", "MTLUSDT", "TOMOUSDT", "PERLUSDT", "DENTUSDT", "MFTUSDT", "KEYUSDT", "STORMUSDT", "DOCKUSDT", "WANUSDT", "FUNUSDT", "CVCUSDT", "CHZUSDT", "BANDUSDT", "BUSDUSDT", "BEAMUSDT", "XTZUSDT", "RENUSDT", "RVNUSDT", "HCUSDT", "HBARUSDT", "NKNUSDT", "STXUSDT", "KAVAUSDT", "ARPAUSDT", "IOTXUSDT", "RLCUSDT", "MCOUSDT", "CTXCUSDT", "BCHUSDT", "TROYUSDT", "VITEUSDT", "FTTUSDT", "EURUSDT", "OGNUSDT", "DREPUSDT", "BULLUSDT", "BEARUSDT", "ETHBULLUSDT", "ETHBEARUSDT", "TCTUSDT", "WRXUSDT", "BTSUSDT", "LSKUSDT", "BNTUSDT", "LTOUSDT", "EOSBULLUSDT", "EOSBEARUSDT", "XRPBULLUSDT", "XRPBEARUSDT", "STRATUSDT", "AIONUSDT", "MBLUSDT", "COTIUSDT", "BNBBULLUSDT", "BNBBEARUSDT", "STPTUSDT", "WTCUSDT", "DATAUSDT", "XZCUSDT", "SOLUSDT", "CTSIUSDT", "HIVEUSDT", "CHRUSDT", "BTCUPUSDT", "BTCDOWNUSDT", "GXSUSDT", "ARDRUSDT", "LENDUSDT", "MDTUSDT", "STMXUSDT", "KNCUSDT", "REPUSDT", "LRCUSDT", "PNTUSDT", "COMPUSDT", "BKRWUSDT", "SCUSDT", "ZENUSDT", "SNXUSDT", "ETHUPUSDT", "ETHDOWNUSDT", "ADAUPUSDT", "ADADOWNUSDT", "LINKUPUSDT", "LINKDOWNUSDT", "VTHOUSDT", "DGBUSDT", "GBPUSDT", "SXPUSDT", "MKRUSDT", "DAIUSDT", "DCRUSDT", "STORJUSDT", "BNBUPUSDT", "BNBDOWNUSDT", "XTZUPUSDT", "XTZDOWNUSDT", "MANAUSDT", "AUDUSDT", "YFIUSDT", "BALUSDT", "BLZUSDT", "IRISUSDT", "KMDUSDT", "JSTUSDT", "SRMUSDT", "ANTUSDT", "CRVUSDT", "SANDUSDT", "OCEANUSDT", "NMRUSDT", "DOTUSDT", "LUNAUSDT", "RSRUSDT", "PAXGUSDT", "WNXMUSDT", "TRBUSDT", "BZRXUSDT", "SUSHIUSDT", "YFIIUSDT", "KSMUSDT", "EGLDUSDT", "DIAUSDT", "RUNEUSDT", "FIOUSDT", "UMAUSDT", "EOSUPUSDT", "EOSDOWNUSDT", "TRXUPUSDT", "TRXDOWNUSDT", "XRPUPUSDT", "XRPDOWNUSDT", "DOTUPUSDT", "DOTDOWNUSDT", "BELUSDT", "WINGUSDT", "LTCUPUSDT", "LTCDOWNUSDT", "UNIUSDT", "NBSUSDT", "OXTUSDT", "SUNUSDT", "AVAXUSDT", "HNTUSDT", "FLMUSDT", "UNIUPUSDT", "UNIDOWNUSDT", "ORNUSDT", "UTKUSDT", "XVSUSDT", "ALPHAUSDT", "AAVEUSDT", "NEARUSDT", "SXPUPUSDT", "SXPDOWNUSDT", "FILUSDT", "FILUPUSDT", "FILDOWNUSDT", "YFIUPUSDT", "YFIDOWNUSDT", "INJUSDT", "AUDIOUSDT", "CTKUSDT", "BCHUPUSDT", "BCHDOWNUSDT", "AKROUSDT", "AXSUSDT", "HARDUSDT", "DNTUSDT", "STRAXUSDT", "UNFIUSDT", "ROSEUSDT", "AVAUSDT", "XEMUSDT", "AAVEUPUSDT", "AAVEDOWNUSDT", "SKLUSDT", "SUSDUSDT", "SUSHIUPUSDT", "SUSHIDOWNUSDT", "XLMUPUSDT", "XLMDOWNUSDT", "GRTUSDT", "JUVUSDT", "PSGUSDT", "1INCHUSDT", "REEFUSDT", "OGUSDT", "ATMUSDT", "ASRUSDT", "CELOUSDT", "RIFUSDT", "BTCSTUSDT", "TRUUSDT", "CKBUSDT", "TWTUSDT", "FIROUSDT", "LITUSDT", "SFPUSDT", "DODOUSDT", "CAKEUSDT", "ACMUSDT", "BADGERUSDT", "FISUSDT", "OMUSDT", "PONDUSDT", "DEGOUSDT", "ALICEUSDT", "LINAUSDT", "PERPUSDT", "RAMPUSDT", "SUPERUSDT", "CFXUSDT", "EPSUSDT", "AUTOUSDT", "TKOUSDT", "PUNDIXUSDT", "TLMUSDT", "1INCHUPUSDT", "1INCHDOWNUSDT", "BTGUSDT", "MIRUSDT", "BARUSDT", "FORTHUSDT", "BAKEUSDT", "BURGERUSDT", "SLPUSDT", "SHIBUSDT", "ICPUSDT", "ARUSDT", "POLSUSDT", "MDXUSDT", "MASKUSDT", "LPTUSDT", "NUUSDT", "XVGUSDT", "ATAUSDT", "GTCUSDT", "TORNUSDT", "KEEPUSDT", "ERNUSDT", "KLAYUSDT", "PHAUSDT", "BONDUSDT", "MLNUSDT", "DEXEUSDT", "C98USDT", "CLVUSDT", "QNTUSDT", "FLOWUSDT", "TVKUSDT", "MINAUSDT", "RAYUSDT", "FARMUSDT", "ALPACAUSDT", "QUICKUSDT", "MBOXUSDT", "FORUSDT", "REQUSDT", "GHSTUSDT", "WAXPUSDT", "TRIBEUSDT", "GNOUSDT", "XECUSDT", "ELFUSDT", "DYDXUSDT", "POLYUSDT", "IDEXUSDT", "VIDTUSDT", "USDPUSDT", "GALAUSDT", "ILVUSDT", "YGGUSDT", "SYSUSDT", "DFUSDT", "FIDAUSDT", "FRONTUSDT", "CVPUSDT", "AGLDUSDT", "RADUSDT", "BETAUSDT", "RAREUSDT", "LAZIOUSDT", "CHESSUSDT", "ADXUSDT", "AUCTIONUSDT", "DARUSDT", "BNXUSDT", "RGTUSDT", "MOVRUSDT", "CITYUSDT", "ENSUSDT", "KP3RUSDT", "QIUSDT", "PORTOUSDT", "POWRUSDT", "VGXUSDT", "JASMYUSDT", "AMPUSDT", "PLAUSDT", "PYRUSDT", "RNDRUSDT", "ALCXUSDT", "SANTOSUSDT", "MCUSDT", "ANYUSDT", "BICOUSDT", "FLUXUSDT", "FXSUSDT", "VOXELUSDT", "HIGHUSDT", "CVXUSDT", "PEOPLEUSDT", "OOKIUSDT", "SPELLUSDT", "USTUSDT", "JOEUSDT", "ACHUSDT", "IMXUSDT", "GLMRUSDT", "LOKAUSDT", "SCRTUSDT", "API3USDT", "BTTCUSDT", "ACAUSDT", "ANCUSDT", "XNOUSDT", "WOOUSDT", "ALPINEUSDT", "TUSDT", "ASTRUSDT", "GMTUSDT", "KDAUSDT", "APEUSDT", "BSWUSDT", "BIFIUSDT", "MULTIUSDT", "STEEMUSDT", "MOBUSDT", "NEXOUSDT", "REIUSDT", "GALUSDT", "LDOUSDT", "EPXUSDT", "OPUSDT", "LEVERUSDT", "STGUSDT", "LUNCUSDT", "GMXUSDT", "NEBLUSDT", "POLYXUSDT", "APTUSDT", "OSMOUSDT", "HFTUSDT", "PHBUSDT", "HOOKUSDT", "MAGICUSDT", "HIFIUSDT", "RPLUSDT", "PROSUSDT", "AGIXUSDT", "GNSUSDT", "SYNUSDT", "VIBUSDT", "SSVUSDT", "LQTYUSDT", "AMBUSDT", "BETHUSDT", "USTCUSDT", "GASUSDT", "GLMUSDT", "PROMUSDT", "QKCUSDT", "UFTUSDT", "IDUSDT", "ARBUSDT", "LOOMUSDT", "OAXUSDT", "RDNTUSDT"]
 
 
@@ -70,7 +68,7 @@ limit = 100
 
 max_threads = 10
 data_list = []
-
+ 
 with ThreadPoolExecutor(max_workers=max_threads) as executor:
     futures = [executor.submit(fetch_data, symbol) for symbol in symbol_list]
 
@@ -80,13 +78,10 @@ with ThreadPoolExecutor(max_workers=max_threads) as executor:
 
 data_df = pd.concat(data_list, axis=0)
 
-# print(data_df)
-# FOD_list = ["BTCUSDT","BTCUSDT","BTCUSDT","BTCUSDT"]
-# FOB_list = ["BTCUSDT","BTCUSDT","BTCUSDT","BTCUSDT"]
-FOD_list = [];
-FOB_list = [];
+FOD_list = []
+FOB_list = []
 for symbol in symbol_list:
-
+    
     rows = data_df.loc[symbol]
     prev = rows.iloc[-2]
     cur = rows.iloc[-1]
@@ -101,20 +96,20 @@ for symbol in symbol_list:
     curma50 = cur.MA50
     rsi14 = cur.RSI14
 
-    ema4x8cross = prevema4 < prevma8 and curema4 > curma8
-    strongtrend = curma8 > curma20 > curma50
+    ema4x8cross = prevema4 < prevma8 and curema4 > curma8 
+    reversecross = prevema4 > prevma8 and curema4 < curma8 
+    strongtrend = curma8 > curma20 > curma50 
     retracetrend = curma20 > curma8 > curma50
     if ema4x8cross:
-        if strongtrend and rsi14 >= 60:
+        if strongtrend and rsi14>=60:
             FOD_list.append(symbol)
-        elif retracetrend and rsi14 >= 50:
+        elif retracetrend and rsi14>=50:
             FOB_list.append(symbol)
 
-# print(f"{interval} FOB LIST:")
-# print(FOB_list)
-# print(f"{interval} FOD LIST:")
-# print(FOD_list)
-# print("DONE")
+print(f"{interval} FOB LIST:")
+print(FOB_list)
+print(f"{interval} FOD LIST:")
+print(FOD_list)
 
 app = dash.Dash(__name__)
 server = app.server
