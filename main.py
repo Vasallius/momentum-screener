@@ -105,7 +105,7 @@ app.layout = html.Div(
         html.H1('My Lists'),
         html.Div(
             [
-                html.H4('15m FOB LIST'),
+                html.H4(f'{interval}FOB LIST'),
                 html.Ul(
                     [html.Li(symbol) for symbol in FOB_list]
                 )
@@ -114,7 +114,7 @@ app.layout = html.Div(
         ),
         html.Div(
             [
-                html.H4('15m FOD LIST'),
+                html.H4(f'{interval} FOD LIST'),
                 html.Ul(
                     [html.Li(symbol) for symbol in FOD_list]
                 )
