@@ -41,7 +41,7 @@ def rsi_tradingview(ohlc: pd.DataFrame, period: int = 14, round_rsi: bool = True
     return np.round(rsi, 2) if round_rsi else rsi
 
 def fetch_data(symbol):
-    print(f"Processing {symbol}")
+    # print(f"Processing {symbol}")
     ohlcv = bybit.fetch_ohlcv(symbol, interval, limit)
     headers = ["timestamp", "open", "high", "low", "close", "volume"]
     df = pd.DataFrame(ohlcv, columns=headers)
