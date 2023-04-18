@@ -1,0 +1,26 @@
+@font-face {
+    font-family: 'DMSANS';
+    src: url('/assets/DMSans-Bold.ttf');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'INTER';
+    src: url('/assets/Inter-VariableFont_slnt,wght.ttf');
+    font-weight: bold;
+    font-style: normal;
+}
+
+.dmsans {
+    font-family: 'DMSANS';
+    font-weight: bold;
+}
+
+.inter {
+    font-family: 'INTER';
+}
+
+.active {
+    background-color: #0083FF !important;
+}
