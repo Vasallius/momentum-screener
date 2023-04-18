@@ -24,12 +24,21 @@ limit = 100
 max_threads = 10
 data_list = []
 
-with ThreadPoolExecutor(max_workers=max_threads) as executor:
-    futures = [executor.submit(fetch_data, symbol) for symbol in symbol_list]
+def rsi_tradingview(ohlc: pd.DataFrame, period: int = 14, round_rsi: bool = True):
+    delta = ohlc["close"].diff()
 
-    for future in as_completed(futures):
-        symbol_df = future.result()
-        data_list.append(symbol_df)
+    up = delta.copy()
+    up[up < 0] = 0
+    up = pd.Series.ewm(up, alpha=1/period).mean()
+
+    down = delta.copy()
+    down[down > 0] = 0
+    down *= -1
+    down = pd.Series.ewm(down, alpha=1/period).mean()
+
+    rsi = np.where(up == 0, 0, np.where(down == 0, 100, 100 - (100 / (1 + up / down))))
+
+    return np.round(rsi, 2) if round_rsi else rsi
 
 def fetch_data(symbol):
     print(f"Processing {symbol}")
@@ -51,6 +60,15 @@ def fetch_data(symbol):
     df.index = pd.MultiIndex.from_product([[symbol], df.index], names=["symbol", "timestamp"])
 
     return df
+
+with ThreadPoolExecutor(max_workers=max_threads) as executor:
+    futures = [executor.submit(fetch_data, symbol) for symbol in symbol_list]
+
+    for future in as_completed(futures):
+        symbol_df = future.result()
+        data_list.append(symbol_df)
+
+
 
 ticker_data = {}
 for symbol in symbol_list[:30]:
