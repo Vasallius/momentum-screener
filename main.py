@@ -76,9 +76,8 @@ def fetch_data(symbol, interval):
 
     df["RSI14"] = rsi_tradingview(df)
 
-    # df = df.tail(2)
-    last_five_rows = df.tail(20)
-    df = last_five_rows.head(2)
+/    # last_five_rows = df.tail(20)
+    # df = last_five_rows.head(2)
     df.index = pd.MultiIndex.from_product([[symbol], df.index], names=["symbol", "timestamp"])
 
     return df
