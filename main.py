@@ -1,5 +1,5 @@
 import dash
-from dash import html, callback, Input, Output, State
+from dash import html,Input, Output, State, dcc
 import ccxt
 import pandas as pd
 import numpy as np
@@ -14,12 +14,13 @@ app = dash.Dash(__name__, external_scripts=external_script, external_stylesheets
 app.scripts.config.serve_locally = True
 server = app.server
 
+debug_messages = []
 
 FOB_list = []
 FOD_list = []
 
 start = True
-interval = "5m"
+interval = "4h"
 
 bybit = ccxt.bybit()
 markets = bybit.load_markets()
@@ -60,9 +61,14 @@ def rsi_tradingview(ohlc: pd.DataFrame, period: int = 14, round_rsi: bool = True
 
     return np.round(rsi, 2) if round_rsi else rsi
 
+
+
 def fetch_data(symbol, interval):
     print(f"Processing {symbol}")
     print(interval)
+    global debug_messages
+    debug_messages.append(f"Processing {symbol}")
+    debug_messages.append(str(interval))
     ohlcv = bybit.fetch_ohlcv(symbol, interval, limit)
     headers = ["timestamp", "open", "high", "low", "close", "volume"]
     df = pd.DataFrame(ohlcv, columns=headers)
@@ -87,8 +93,8 @@ def fetch_data(symbol, interval):
 
 def screen(symbol_list,df):
     global FOD_list, FOB_list
-    FOD_list = []
-    FOB_list = []
+    FOD_list_local = []
+    FOB_list_local = []
     print(f"LISTS: {FOB_list}, {FOD_list}")
     for symbol in symbol_list:
         print(f"Testing {symbol} for setups.")
@@ -113,11 +119,13 @@ def screen(symbol_list,df):
             retracetrend = curma20 > curma8 > curma50
             if ema4x8cross:
                 if strongtrend and rsi14>=60:
-                    FOD_list.append(symbol)
+                    FOD_list_local.append(symbol)
                 elif retracetrend and rsi14>=50:
-                    FOB_list.append(symbol)
+                    FOB_list_local.append(symbol)
         except:
             pass
+    FOB_list = FOB_list_local
+    FOD_list = FOD_list_local
     print(f"LISTS: {FOB_list}, {FOD_list}")
     print("Screen complete.")
 
@@ -174,20 +182,12 @@ def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, b
     active_class = "bg-[#0083FF] inter font-bold tracking-wider text-black py-2 px-4 rounded-md mr-2"
     if active_class in btn_m5_class:
         interval = "5m"
-        FOB_list =["KIDDKOSA", "CHAW CHAW"]
-
     elif active_class in btn_m15_class:
         interval = "15m"
-        FOB_list =["KIDDKOSA", "CHAW CHAW"]
-
     elif active_class in btn_1h_class:
         interval = "1h"
-        FOB_list =["KIDDKOSA", "CHAW CHAW"]
-
     elif active_class in btn_4h_class:
         interval = "4h"
-        FOB_list =["KIDDKOSA", "CHAW CHAW", "JINN"]
-
     elif active_class in btn_1d_class:
         interval = "1d"
     else:
@@ -206,6 +206,17 @@ def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, b
     # Run out setup screen
     screen(symbol_list,data_df)
     return interval
+
+
+@app.callback(Output("debug-output", "children"),
+              Input("interval-update", "n_intervals"))
+def update_debug_output(n):
+    global debug_messages
+    # Convert the list of debug messages into a list of html.P elements
+    debug_output = [html.P(message) for message in debug_messages]
+    debug_messages = []  # Clear debug messages after displaying
+    return debug_output
+
 app.layout = html.Div(
     [
         html.Div([
@@ -267,6 +278,10 @@ app.layout = html.Div(
 
         html.Div(id="output",className="text-white"),
         html.Div(id="dummy-state", style={"display": "none"}),
+        dcc.Interval(id="interval-update", interval=1 * 1000, n_intervals=0),  # 1 second interval
+        html.Div(id="debug-output",className="text-white"),
+ # 1 second interval
+
 
     ],
     className="min-h-screen flex flex-col",
