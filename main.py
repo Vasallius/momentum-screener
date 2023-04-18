@@ -15,8 +15,8 @@ app.scripts.config.serve_locally = True
 server = app.server
 
 
-FOB_list = ['TROY/USDT', 'Button 2', 'Button 3', 'Button 4','Button 1', 'Button 2', 'Button 3', 'Button 4','Button 1', 'Button 2', 'Button 3', 'Button 4']
-FOD_list = ['Button 5', 'Button 6', 'Button 1', 'Button 2', 'Button 3', 'Button 4','Button 1', 'Button 2', 'Button 3', 'Button 4']
+FOB_list = []
+FOD_list = []
 
 start = True
 interval = "5m"
@@ -162,7 +162,7 @@ def toggle_active_state(btn_m5_clicks, btn_m15_clicks, btn_1h_clicks, btn_4h_cli
               State("btn-m15", "className"),
               State("btn-1h", "className"),
               State("btn-4h", "className"),
-              State("btn-1d", "className"))
+              State("btn-1d", "className"),prevent_initial_call=True)
 def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, btn_1d_class):
     # get the value of the selected time interval
     global interval, FOB_list, FOD_list, data_list
