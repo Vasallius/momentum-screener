@@ -77,6 +77,7 @@ with ThreadPoolExecutor(max_workers=max_threads) as executor:
 data_df = pd.concat(data_list, axis=0)
 # data_df.to_excel("crypto_data.xlsx")
 
+
 FOD_list = []
 FOB_list = []
 for symbol in symbol_list:
