@@ -103,30 +103,35 @@ for symbol in symbol_list:
 
 
 
-ticker_data = {}
-for symbol in symbol_list[:30]:
-    print(symbol)
-    ticker = bybit.fetch_ticker(symbol)
-    last_price = ticker['last']
-    ticker_data[symbol] = last_price
+# ticker_data = {}
+# for symbol in symbol_list[:30]:
+#     print(symbol)
+#     ticker = bybit.fetch_ticker(symbol)
+#     last_price = ticker['last']
+#     ticker_data[symbol] = last_price
 
-app.layout = html.Div([
-    html.H1('Bybit Tickers'),
-    html.Table([
-        html.Thead([
-            html.Tr([
-                html.Th('Symbol'),
-                html.Th('Last Price')
-            ])
-        ]),
-        html.Tbody([
-            html.Tr([
-                html.Td(symbol),
-                html.Td(f"{last_price:.2f}")
-            ]) for symbol, last_price in ticker_data.items()
-        ])
-    ])
-])
+app.layout = html.Div(
+    [
+        html.H1('My Lists'),
+        html.Div(
+            [
+                html.H4('15m FOB LIST'),
+                html.Ul(
+                    [html.Li(symbol) for symbol in FOB_list]
+                )
+            ],
+            style={'margin-bottom': '10px'}
+        ),
+        html.Div(
+            [
+                html.H4('15m FOD LIST'),
+                html.Ul(
+                    [html.Li(symbol) for symbol in FOD_list]
+                )
+            ]
+        )
+    ]
+)
 
 if __name__ == '__main__':
     app.run_server(debug=True)
