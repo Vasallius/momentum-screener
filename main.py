@@ -68,6 +68,39 @@ with ThreadPoolExecutor(max_workers=max_threads) as executor:
         symbol_df = future.result()
         data_list.append(symbol_df)
 
+data_df = pd.concat(data_list, axis=0)
+
+FOD_list = []
+FOB_list = []
+for symbol in symbol_list:
+    try:
+        rows = data_df.loc[f'{symbol}:USDT']
+        print(rows)
+        # prev = rows.iloc[-2]
+        # cur = rows.iloc[-1]
+        # close = rows.iloc[-1].close
+        # prevema4 = prev.EMA4
+        # curema4 = cur.EMA4
+        # prevma8 = prev.MA8
+        # curma8 = cur.MA8
+        # prevma20 = prev.MA20
+        # curma20 = cur.MA20
+        # prevma50 = prev.MA50
+        # curma50 = cur.MA50
+        # rsi14 = cur.RSI14
+
+        # ema4x8cross = prevema4 < prevma8 and curema4 > curma8 
+        # reversecross = prevema4 > prevma8 and curema4 < curma8 
+        # strongtrend = curma8 > curma20 > curma50 
+        # retracetrend = curma20 > curma8 > curma50
+        # if ema4x8cross:
+        #     if strongtrend and rsi14>=60:
+        #         FOD_list.append(symbol)
+        #     elif retracetrend and rsi14>=50:
+        #         FOB_list.append(symbol)
+    except:
+        print(symbol)
+
 
 
 ticker_data = {}
