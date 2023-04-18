@@ -3,6 +3,8 @@ from dash import html
 import ccxt
 
 app = dash.Dash(__name__)
+server = app.server
+
 
 bybit = ccxt.bybit()
 markets = bybit.load_markets()
