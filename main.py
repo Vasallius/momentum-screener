@@ -273,12 +273,12 @@ app.layout = html.Div(
                     className="grid grid-cols-5 gap-4 mt-4"
                 ),
             ], className="flex flex-col items-center"),
+            html.Div(id="debug-output",className="text-white"),
         ], className="flex flex-col", id="heading"),
 
         html.Div(id="output",className="text-white"),
         html.Div(id="dummy-state", style={"display": "none"}),
         dcc.Interval(id="interval-update", interval=1 * 1000, n_intervals=0),  # 1 second interval
-        html.Div(id="debug-output",className="text-white"),
  # 1 second interval
 
 
