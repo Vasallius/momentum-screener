@@ -158,6 +158,8 @@ pip-selfcheck.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python
 
-crypto_data.xlsx
+*.xlsx
 main2.py
 *.ipynb
+glc.py
+*.csv

@@ -21,7 +21,7 @@ FOD_list = []
 
 start = True
 interval = "4h"
-
+scan_status = "Start Scan"
 bybit = ccxt.bybit()
 markets = bybit.load_markets()
 
@@ -169,11 +169,13 @@ def toggle_active_state(btn_m5_clicks, btn_m15_clicks, btn_1h_clicks, btn_4h_cli
               State("btn-m15", "className"),
               State("btn-1h", "className"),
               State("btn-4h", "className"),
-              State("btn-1d", "className"),prevent_initial_call=True)
+              State("btn-1d", "className"),
+              prevent_initial_call=True,
+            )
 def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, btn_1d_class):
     # get the value of the selected time interval
-    global interval, FOB_list, FOD_list, data_list
-
+    global interval, FOB_list, FOD_list, data_list, scan_status
+    scan_status = "Scan Ongoing"
     data_list = []
 
     
@@ -204,6 +206,7 @@ def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, b
 
     # Run out setup screen
     screen(symbol_list,data_df)
+    scan_status = "Scan Complete"
     return interval
 
 
@@ -215,6 +218,12 @@ def update_debug_output(n):
     debug_output = [html.P(message) for message in debug_messages]
     debug_messages = []  # Clear debug messages after displaying
     return debug_output
+
+@app.callback(Output("scan-status", "children"),
+              Input("interval-update-scan-status", "n_intervals"))
+def update_scan_status(n):
+    global scan_status
+    return scan_status
 
 app.layout = html.Div(
     [
@@ -259,7 +268,8 @@ app.layout = html.Div(
                 html.Button('REFRESH', id="btn-refresh", className="bg-[#FF0000] inter font-bold tracking-wider text-white py-2 px-6 rounded-md"),
 
             ], className="flex flex-row mx-auto mb-6"),
-
+            html.Div(id="scan-status", className="text-white font-bold dmsans text-xl mx-auto"),
+            dcc.Interval(id="interval-update-scan-status", interval=1 * 1000, n_intervals=0),  # 1 second interval
              # FOB and FOD
             html.Div([
                 html.Div("FOB", className="text-white font-bold dmsans text-4xl mx-auto"),
@@ -277,7 +287,7 @@ app.layout = html.Div(
         ], className="flex flex-col", id="heading"),
 
         html.Div(id="output",className="text-white"),
-        html.Div(id="dummy-state", style={"display": "none"}),
+        html.Div(id="dummy-state"),
         dcc.Interval(id="interval-update", interval=1 * 1000, n_intervals=0),  # 1 second interval
  # 1 second interval
 
