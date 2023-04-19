@@ -21,7 +21,7 @@ FOD_list = []
 
 start = True
 interval = "4h"
-scan_status = "Start Scan"
+scan_status = ""
 bybit = ccxt.bybit()
 markets = bybit.load_markets()
 
@@ -64,8 +64,8 @@ def rsi_tradingview(ohlc: pd.DataFrame, period: int = 14, round_rsi: bool = True
 
 
 def fetch_data(symbol, interval):
-    print(f"Processing {symbol}")
-    print(interval)
+    # print(f"Processing {symbol}")
+    # print(interval)
     global debug_messages
     debug_messages.append(f"Processing {symbol}")
     ohlcv = bybit.fetch_ohlcv(symbol, interval, limit)
@@ -96,7 +96,7 @@ def screen(symbol_list,df):
     FOB_list_local = []
     print(f"LISTS: {FOB_list}, {FOD_list}")
     for symbol in symbol_list:
-        print(f"Testing {symbol} for setups.")
+        # print(f"Testing {symbol} for setups.")
         try:
             rows = df.loc[f'{symbol}:USDT']
             prev = rows.iloc[-2]
@@ -222,6 +222,7 @@ def update_debug_output(n):
 @app.callback(Output("scan-status", "children"),
               Input("interval-update-scan-status", "n_intervals"))
 def update_scan_status(n):
+    print("update")
     global scan_status
     return scan_status
 
