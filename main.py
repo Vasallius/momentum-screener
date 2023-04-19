@@ -68,7 +68,6 @@ def fetch_data(symbol, interval):
     print(interval)
     global debug_messages
     debug_messages.append(f"Processing {symbol}")
-    debug_messages.append(str(interval))
     ohlcv = bybit.fetch_ohlcv(symbol, interval, limit)
     headers = ["timestamp", "open", "high", "low", "close", "volume"]
     df = pd.DataFrame(ohlcv, columns=headers)
@@ -278,8 +277,8 @@ app.layout = html.Div(
 
         html.Div(id="output",className="text-white"),
         html.Div(id="dummy-state", style={"display": "none"}),
-        html.Div("Logs go here.", id="debug-output", className="text-white font-bold dmsans text-xl mx-auto", style={"min-height": "100px", "padding": "10px", "overflow": "auto"}),
-        dcc.Interval(id="interval-update", interval=5 * 1000, n_intervals=0),  # 1 second interval
+        dcc.Interval(id="interval-update", interval=1 * 1000, n_intervals=0),  # 1 second interval
+        html.Div(id="debug-output",className="text-white"),
  # 1 second interval
 
 
