@@ -222,7 +222,7 @@ def update_debug_output(n):
 @app.callback(Output("scan-status", "children"),
               Input("interval-update-scan-status", "n_intervals"))
 def update_scan_status(n):
-    print("update")
+    # print("update")
     global scan_status
     return scan_status
 
