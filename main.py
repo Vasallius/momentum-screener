@@ -270,7 +270,7 @@ app.layout = html.Div(
 
             ], className="flex flex-row mx-auto mb-6"),
             html.Div(id="scan-status", className="text-white font-bold dmsans text-xl mx-auto"),
-            dcc.Interval(id="interval-update-scan-status", interval=1 * 1000, n_intervals=0),  # 1 second interval
+            dcc.Interval(id="interval-update-scan-status", interval=10 * 1000, n_intervals=0),  # 1 second interval
              # FOB and FOD
             html.Div([
                 html.Div("FOB", className="text-white font-bold dmsans text-4xl mx-auto"),
@@ -299,4 +299,4 @@ app.layout = html.Div(
 )
 
 if __name__ == '__main__':
-    app.run_server(debug=True) 
+    app.run_server(debug=False) 
