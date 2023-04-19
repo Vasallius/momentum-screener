@@ -278,8 +278,8 @@ app.layout = html.Div(
 
         html.Div(id="output",className="text-white"),
         html.Div(id="dummy-state", style={"display": "none"}),
+        html.Div("Logs go here.", id="debug-output",className="text-white font-bold dmsans text-xl mx-auto"),
         dcc.Interval(id="interval-update", interval=1 * 1000, n_intervals=0),  # 1 second interval
-        html.Div(id="debug-output",className="text-white"),
  # 1 second interval
 
 
