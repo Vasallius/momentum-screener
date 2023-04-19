@@ -30,7 +30,7 @@ symbol_list = [symbol for symbol in markets.keys()]
 
 limit = 100
 
-max_threads = 10
+max_threads = 4
 data_list = []
 
 @app.callback(Output("FOB-container", "children"),
@@ -216,7 +216,7 @@ def update_debug_output(n):
     global debug_messages
     # Convert the list of debug messages into a list of html.P elements
     debug_output = [html.P(message) for message in debug_messages]
-    debug_messages = []  # Clear debug messages after displaying
+    debug_messages.clear() # Clear debug messages after displaying
     return debug_output
 
 @app.callback(Output("scan-status", "children"),
@@ -270,7 +270,7 @@ app.layout = html.Div(
 
             ], className="flex flex-row mx-auto mb-6"),
             html.Div(id="scan-status", className="text-white font-bold dmsans text-xl mx-auto"),
-            dcc.Interval(id="interval-update-scan-status", interval=10 * 1000, n_intervals=0),  # 1 second interval
+            dcc.Interval(id="interval-update-scan-status", interval=2 * 1000, n_intervals=0),  # 1 second interval
              # FOB and FOD
             html.Div([
                 html.Div("FOB", className="text-white font-bold dmsans text-4xl mx-auto"),
@@ -289,7 +289,7 @@ app.layout = html.Div(
 
         html.Div(id="output",className="text-white"),
         html.Div(id="dummy-state"),
-        dcc.Interval(id="interval-update", interval=1 * 1000, n_intervals=0),  # 1 second interval
+        dcc.Interval(id="interval-update", interval=2 * 1000, n_intervals=0),  # 1 second interval
  # 1 second interval
 
 
