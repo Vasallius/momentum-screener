@@ -64,7 +64,6 @@ def rsi_tradingview(ohlc: pd.DataFrame, period: int = 14, round_rsi: bool = True
 
 
 def fetch_data(symbol, interval):
-    print("start fetch data")
     # print(f"Processing {symbol}")
     # print(interval)
     global debug_messages
@@ -86,7 +85,7 @@ def fetch_data(symbol, interval):
     # last_five_rows = df.tail(20)
     # df = last_five_rows.head(2)
     df.index = pd.MultiIndex.from_product([[symbol], df.index], names=["symbol", "timestamp"])
-    print("end data")
+
     return df
 
 
