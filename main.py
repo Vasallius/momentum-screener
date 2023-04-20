@@ -194,7 +194,8 @@ def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, b
     elif active_class in btn_1d_class:
         interval = "1d"
     else:
-        interval = "test"
+        interval = "1h"
+        return interval, "No interval select, defaulting to 1h"
 
     print(F"interval to run threads: {interval}")
     # Run multi-thread
