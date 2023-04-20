@@ -175,17 +175,15 @@ def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, b
     # get the value of the selected time interval
     global interval, FOB_list, FOD_list, data_list, scan_status
     scan_status = "Scan Ongoing"
-    print("Set scan status to scan ongoing")
+    # print("Set scan status to scan ongoing")
     data_list = []
 
     
     # set the interval to active button
     active_class = "bg-[#0083FF] inter font-bold tracking-wider text-black py-2 px-4 rounded-md mr-2"
     if active_class in btn_m5_class:
-        print("Setting interval to 5m")
         interval = "5m"
     elif active_class in btn_m15_class:
-        print("Setting interval to 15m")
         interval = "15m"
     elif active_class in btn_1h_class:
         interval = "1h"
@@ -211,7 +209,7 @@ def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, b
     # Run out setup screen
     screen(symbol_list,data_df)
     scan_status = "Scan Complete"
-    print("Set scan status to scan complete")
+    # print("Set scan status to scan complete")
 
     return interval,f"Finished scanning for {interval}"
 
@@ -228,9 +226,9 @@ def update_debug_output(n):
 @app.callback(Output("scan-status", "children"),
               Input("interval-update-scan-status", "n_intervals"))
 def update_scan_status(n):
-    print("Updating Scan Status.")
+    # print("Updating Scan Status.")
     global scan_status
-    print(f"Scan status = {scan_status}")
+    # print(f"Scan status = {scan_status}")
     return scan_status
 
 app.layout = html.Div(
