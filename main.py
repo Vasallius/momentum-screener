@@ -175,6 +175,7 @@ def toggle_active_state(btn_m5_clicks, btn_m15_clicks, btn_1h_clicks, btn_4h_cli
 def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, btn_1d_class):
     # get the value of the selected time interval
     global interval, FOB_list, FOD_list, data_list, scan_status
+    print("Scanning for f{interval}")
     scan_status = "Scan Ongoing"
     data_list = []
 
