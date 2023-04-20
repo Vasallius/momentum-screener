@@ -162,6 +162,7 @@ def toggle_active_state(btn_m5_clicks, btn_m15_clicks, btn_1h_clicks, btn_4h_cli
     return ["bg-[#0083FF] inter font-bold tracking-wider text-black py-2 px-4 rounded-md mr-2 active" if state else "bg-white inter font-bold tracking-wider text-black py-2 px-4 rounded-md mr-2" for state in button_states]
 
 @app.callback(Output("dummy-state", "children"),
+              Output("dummy-state2", "children"),
               Input("btn-refresh", "n_clicks"),
               State("btn-m5", "className"),
               State("btn-m15", "className"),
@@ -211,7 +212,7 @@ def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, b
     scan_status = "Scan Complete"
     print("Set scan status to scan complete")
 
-    return interval
+    return interval,f"Finished scanning for {interval}"
 
 
 @app.callback(Output("debug-output", "children"),
@@ -289,7 +290,8 @@ app.layout = html.Div(
                     className="grid grid-cols-5 gap-4 mt-4"
                 ),
             ], className="flex flex-col items-center"),
-            html.Div(id="dummy-state",className="text-white"),
+            html.Div(id="dummy-state"),
+            html.Div(id="dummy-state2",className="text-white"),
             html.Div(id="debug-output",className="text-white"),
         ], className="flex flex-col", id="heading"),
 
