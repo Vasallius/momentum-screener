@@ -20,7 +20,7 @@ FOB_list = []
 FOD_list = []
 
 start = True
-interval = "4h"
+interval = "1h"
 scan_status = ""
 bybit = ccxt.bybit()
 markets = bybit.load_markets()
@@ -94,7 +94,6 @@ def screen(symbol_list,df):
     global FOD_list, FOB_list
     FOD_list_local = []
     FOB_list_local = []
-    print(f"LISTS: {FOB_list}, {FOD_list}")
     for symbol in symbol_list:
         # print(f"Testing {symbol} for setups.")
         try:
@@ -175,7 +174,7 @@ def toggle_active_state(btn_m5_clicks, btn_m15_clicks, btn_1h_clicks, btn_4h_cli
 def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, btn_1d_class):
     # get the value of the selected time interval
     global interval, FOB_list, FOD_list, data_list, scan_status
-    print("Scanning for f{interval}")
+    print(f"Scanning for {interval}")
     scan_status = "Scan Ongoing"
     data_list = []
 
@@ -285,11 +284,11 @@ app.layout = html.Div(
                     className="grid grid-cols-5 gap-4 mt-4"
                 ),
             ], className="flex flex-col items-center"),
+            html.Div(id="dummy-state",className="text-white"),
             html.Div(id="debug-output",className="text-white"),
         ], className="flex flex-col", id="heading"),
 
         html.Div(id="output",className="text-white"),
-        html.Div(id="dummy-state"),
         dcc.Interval(id="interval-update", interval=2 * 1000, n_intervals=0),  # 1 second interval
  # 1 second interval
 
