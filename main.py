@@ -230,6 +230,7 @@ def update_debug_output(n):
 def update_scan_status(n):
     print("Updating Scan Status.")
     global scan_status
+    print(f"Scan status = f{scan_status}")
     return scan_status
 
 app.layout = html.Div(

@@ -1,1 +1,1 @@
-web: gunicorn --worker-class=gevent --worker-connections=1000 --workers=3 main:server
+web: gunicorn --timeout 600 main:server
