@@ -20,7 +20,7 @@ FOB_list = []
 FOD_list = []
 
 start = True
-interval = "1h"
+interval = "5m"
 scan_status = ""
 bybit = ccxt.bybit()
 markets = bybit.load_markets()
@@ -65,7 +65,6 @@ def rsi_tradingview(ohlc: pd.DataFrame, period: int = 14, round_rsi: bool = True
 
 def fetch_data(symbol, interval):
     # print(f"Processing {symbol}")
-    print(f"actual interval: {interval}")
     global debug_messages
     debug_messages.append(f"Processing {symbol}")
     ohlcv = bybit.fetch_ohlcv(symbol, interval, limit)
@@ -176,6 +175,7 @@ def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, b
     global interval, FOB_list, FOD_list, data_list, scan_status
     print(f"Scanning for {interval}")
     scan_status = "Scan Ongoing"
+    print("Set scan status to scan ongoing")
     data_list = []
 
     
@@ -211,6 +211,8 @@ def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, b
     # Run out setup screen
     screen(symbol_list,data_df)
     scan_status = "Scan Complete"
+    print("Set scan status to scan complete")
+
     return interval
 
 
@@ -226,7 +228,7 @@ def update_debug_output(n):
 @app.callback(Output("scan-status", "children"),
               Input("interval-update-scan-status", "n_intervals"))
 def update_scan_status(n):
-    # print("update")
+    print("Updating Scan Status.")
     global scan_status
     return scan_status
 
@@ -274,7 +276,7 @@ app.layout = html.Div(
 
             ], className="flex flex-row mx-auto mb-6"),
             html.Div(id="scan-status", className="text-white font-bold dmsans text-xl mx-auto"),
-            dcc.Interval(id="interval-update-scan-status", interval=2 * 1000, n_intervals=0),  # 1 second interval
+            dcc.Interval(id="interval-update-scan-status", interval=1 * 1000, n_intervals=0),  # 1 second interval
              # FOB and FOD
             html.Div([
                 html.Div("FOB", className="text-white font-bold dmsans text-4xl mx-auto"),
