@@ -65,7 +65,7 @@ def rsi_tradingview(ohlc: pd.DataFrame, period: int = 14, round_rsi: bool = True
 
 def fetch_data(symbol, interval):
     # print(f"Processing {symbol}")
-    # print(interval)
+    print(f"actual interval: {interval}")
     global debug_messages
     debug_messages.append(f"Processing {symbol}")
     ohlcv = bybit.fetch_ohlcv(symbol, interval, limit)
@@ -182,8 +182,11 @@ def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, b
     # set the interval to active button
     active_class = "bg-[#0083FF] inter font-bold tracking-wider text-black py-2 px-4 rounded-md mr-2"
     if active_class in btn_m5_class:
+        print("Setting interval to 5m")
         interval = "5m"
     elif active_class in btn_m15_class:
+        print("Setting interval to 15m")
+
         interval = "15m"
     elif active_class in btn_1h_class:
         interval = "1h"
@@ -194,6 +197,7 @@ def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, b
     else:
         interval = "test"
 
+    print(F"interval to run threads: {interval}")
     # Run multi-thread
     with ThreadPoolExecutor(max_workers=max_threads) as executor:
         futures = [executor.submit(fetch_data, symbol, interval) for symbol in symbol_list]
