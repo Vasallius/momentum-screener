@@ -173,7 +173,6 @@ def toggle_active_state(btn_m5_clicks, btn_m15_clicks, btn_1h_clicks, btn_4h_cli
 def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, btn_1d_class):
     # get the value of the selected time interval
     global interval, FOB_list, FOD_list, data_list, scan_status
-    print(f"Scanning for {interval}")
     scan_status = "Scan Ongoing"
     print("Set scan status to scan ongoing")
     data_list = []
@@ -186,7 +185,6 @@ def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, b
         interval = "5m"
     elif active_class in btn_m15_class:
         print("Setting interval to 15m")
-
         interval = "15m"
     elif active_class in btn_1h_class:
         interval = "1h"
@@ -230,7 +228,7 @@ def update_debug_output(n):
 def update_scan_status(n):
     print("Updating Scan Status.")
     global scan_status
-    print(f"Scan status = f{scan_status}")
+    print(f"Scan status = {scan_status}")
     return scan_status
 
 app.layout = html.Div(
