@@ -30,7 +30,7 @@ symbol_list = [symbol for symbol in markets.keys()]
 
 limit = 100
 
-max_threads = 4
+max_threads = 10
 data_list = []
 
 @app.callback(Output("FOB-container", "children"),
