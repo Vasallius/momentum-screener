@@ -18,6 +18,8 @@ debug_messages = []
 
 FOB_list = []
 FOD_list = []
+rFOB_list = []
+rFOD_list = []
 
 start = True
 interval = "5m"
@@ -45,6 +47,18 @@ def update_FOD(n_clicks):
     global FOD_list
     return [html.Button(button, className="bg-[#0083FF] inter font-bold text-white py-2 px-4 rounded-md mr-2 w-36") for button in FOD_list]
 
+@app.callback(Output("rFOD-container", "children"),
+              Input("dummy-state", "children"))
+def update_rFOD(n_clicks):
+    global rFOD_list
+    return [html.Button(button, className="bg-[#0083FF] inter font-bold text-white py-2 px-4 rounded-md mr-2 w-36") for button in rFOD_list]
+
+@app.callback(Output("rFOB-container", "children"),
+              Input("dummy-state", "children"))
+def update_rFOB(n_clicks):
+    global rFOB_list
+    return [html.Button(button, className="bg-[#0083FF] inter font-bold text-white py-2 px-4 rounded-md mr-2 w-36") for button in rFOB_list]
+
 def rsi_tradingview(ohlc: pd.DataFrame, period: int = 14, round_rsi: bool = True):
     delta = ohlc["close"].diff()
 
@@ -64,9 +78,8 @@ def rsi_tradingview(ohlc: pd.DataFrame, period: int = 14, round_rsi: bool = True
 
 
 def fetch_data(symbol, interval):
-    # print(f"Processing {symbol}")
-    global debug_messages
-    debug_messages.append(f"Processing {symbol}")
+    # global debug_messages
+    # debug_messages.append(f"Processing {symbol}")
     ohlcv = bybit.fetch_ohlcv(symbol, interval, limit)
     headers = ["timestamp", "open", "high", "low", "close", "volume"]
     df = pd.DataFrame(ohlcv, columns=headers)
@@ -90,9 +103,11 @@ def fetch_data(symbol, interval):
 
 
 def screen(symbol_list,df):
-    global FOD_list, FOB_list
+    global FOD_list, FOB_list, rFOD_list, rFOB_list
     FOD_list_local = []
     FOB_list_local = []
+    rFOD_list_local = []
+    rFOB_list_local = []
     for symbol in symbol_list:
         # print(f"Testing {symbol} for setups.")
         try:
@@ -114,16 +129,25 @@ def screen(symbol_list,df):
             reversecross = prevema4 > prevma8 and curema4 < curma8 
             strongtrend = curma8 > curma20 > curma50 
             retracetrend = curma20 > curma8 > curma50
+            strongdowntrend = curma50 > curma20 > curma8
+            retracedowntrend = curma50 > curma8 > curma20
             if ema4x8cross:
                 if strongtrend and rsi14>=60:
                     FOD_list_local.append(symbol)
                 elif retracetrend and rsi14>=50:
                     FOB_list_local.append(symbol)
+            if reversecross:
+                if strongdowntrend and rsi14 <= 40:
+                    rFOD_list_local.append(symbol)
+                elif retracedowntrend and rsi14 <=50:
+                    rFOB_list_local.append(symbol)
         except:
             pass
     FOB_list = FOB_list_local
     FOD_list = FOD_list_local
-    print(f"LISTS: {FOB_list}, {FOD_list}")
+    rFOD_list = rFOD_list_local
+    rFOB_list = rFOB_list_local
+    print(f"LISTS: FOB: {FOB_list} \n, FOD: {FOD_list} \n rFOB: {rFOB_list} \n rFOD: {rFOD_list}")
     print("Screen complete.")
 
 @app.callback(
@@ -214,14 +238,14 @@ def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, b
     return interval,f"Finished scanning for {interval}"
 
 
-@app.callback(Output("debug-output", "children"),
-              Input("interval-update", "n_intervals"))
-def update_debug_output(n):
-    global debug_messages
-    # Convert the list of debug messages into a list of html.P elements
-    debug_output = [html.P(message) for message in debug_messages]
-    debug_messages.clear() # Clear debug messages after displaying
-    return debug_output
+# @app.callback(Output("debug-output", "children"),
+#               Input("interval-update", "n_intervals"))
+# def update_debug_output(n):
+#     global debug_messages
+#     # Convert the list of debug messages into a list of html.P elements
+#     debug_output = [html.P(message) for message in debug_messages]
+#     debug_messages.clear() # Clear debug messages after displaying
+#     return debug_output
 
 @app.callback(Output("scan-status", "children"),
               Input("interval-update-scan-status", "n_intervals"))
@@ -288,10 +312,20 @@ app.layout = html.Div(
                     id="FOD-container",
                     className="grid grid-cols-5 gap-4 mt-4"
                 ),
+                html.Div("R-FOD", className="text-white font-bold dmsans text-4xl mx-auto"),
+                html.Div(
+                    id="rFOD-container",
+                    className="grid grid-cols-5 gap-4 mt-4"
+                ),
+                html.Div("R-FOB", className="text-white font-bold dmsans text-4xl mx-auto"),
+                html.Div(
+                    id="rFOB-container",
+                    className="grid grid-cols-5 gap-4 mt-4"
+                ),
             ], className="flex flex-col items-center"),
             html.Div(id="dummy-state"),
             html.Div(id="dummy-state2",className="text-white"),
-            html.Div(id="debug-output",className="text-white"),
+            # html.Div(id="debug-output",className="text-white"),
         ], className="flex flex-col", id="heading"),
 
         html.Div(id="output",className="text-white"),
