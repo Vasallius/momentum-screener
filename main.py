@@ -15,9 +15,8 @@ app = dash.Dash(__name__, external_scripts=external_script,
 app.scripts.config.serve_locally = True
 server = app.server
 
-debug_messages = []
+# debug_messages = []
 start = True
-interval = "5m"
 scan_status = ""
 
 bybit = ccxt.bybit()
@@ -64,7 +63,7 @@ def update_rFOD(data):
               Input("pair_list", "data"), prevent_initial_call=True)
 def update_rFOB(data):
     data = json.loads(data)
-    return [html.Button(button, className="bg-[#0083FF] inter font-bold text-white py-2 px-4 rounded-md mr-2 w-36") for button in data["FOB_list"]]
+    return [html.Button(button, className="bg-[#0083FF] inter font-bold text-white py-2 px-4 rounded-md mr-2 w-36") for button in data["rFOB_list"]]
 
 
 def rsi_tradingview(ohlc: pd.DataFrame, period: int = 14, round_rsi: bool = True):
@@ -159,40 +158,32 @@ def screen(symbol_list, df):
     }
 
 
-@app.callback(
-    Output("btn-m5", "className"),
-    Output("btn-m15", "className"),
-    Output("btn-1h", "className"),
-    Output("btn-4h", "className"),
-    Output("btn-1d", "className"),
-    Input("btn-m5", "n_clicks"),
-    Input("btn-m15", "n_clicks"),
-    Input("btn-1h", "n_clicks"),
-    Input("btn-4h", "n_clicks"),
-    Input("btn-1d", "n_clicks"),
-)
-def toggle_active_state(btn_m5_clicks, btn_m15_clicks, btn_1h_clicks, btn_4h_clicks, btn_1d_clicks):
-    global start
-    button_states = [False, False, False, False, False]
-
-    if start:
-        button_states[0] = True
-        start = False
-    else:
-        ctx = dash.callback_context
-        button_id = ctx.triggered[0]["prop_id"].split(".")[0]
-        if button_id == "btn-m5":
-            button_states[0] = True
-        elif button_id == "btn-m15":
-            button_states[1] = True
-        elif button_id == "btn-1h":
-            button_states[2] = True
-        elif button_id == "btn-4h":
-            button_states[3] = True
-        elif button_id == "btn-1d":
-            button_states[4] = True
-
-    return ["bg-[#0083FF] inter font-bold tracking-wider text-black py-2 px-4 rounded-md mr-2 active" if state else "bg-white inter font-bold tracking-wider text-black py-2 px-4 rounded-md mr-2" for state in button_states]
+@app.callback(Output('btn-m5', 'className'),
+              Output('btn-m15', 'className'),
+              Output('btn-1h', 'className'),
+              Output('btn-4h', 'className'),
+              Output('btn-1d', 'className'),
+              Input('btn-m5', 'n_clicks'),
+              Input('btn-m15', 'n_clicks'),
+              Input('btn-1h', 'n_clicks'),
+              Input('btn-4h', 'n_clicks'),
+              Input('btn-1d', 'n_clicks'),
+              prevent_initial_call=True)
+def update_button_style(btn_m5, btn_m15, btn_1h, btn_4h, btn_1d):
+    ctx = dash.callback_context
+    button_id = ctx.triggered[0]['prop_id'].split('.')[0]
+    button_style = "bg-[#0083FF] inter font-bold tracking-wider text-black py-2 px-4 rounded-md mr-2"
+    reset_style = "bg-white inter font-bold tracking-wider text-black py-2 px-4 rounded-md mr-2"
+    if button_id == 'btn-m5':
+        return button_style, reset_style, reset_style, reset_style, reset_style
+    elif button_id == 'btn-m15':
+        return reset_style, button_style, reset_style, reset_style, reset_style
+    elif button_id == 'btn-1h':
+        return reset_style, reset_style, button_style, reset_style, reset_style
+    elif button_id == 'btn-4h':
+        return reset_style, reset_style, reset_style, button_style, reset_style
+    elif button_id == 'btn-1d':
+        return reset_style, reset_style, reset_style, reset_style, button_style
 
 
 # Storing the FOD, FOB, rFOD, rFOB lists in store.
