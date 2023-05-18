@@ -1,26 +1,21 @@
 import dash
-from dash import html,Input, Output, State, dcc
+from dash import html, Input, Output, State, dcc
 import ccxt
 import pandas as pd
 import numpy as np
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import json
 
-
-
-external_script = ["https://tailwindcss.com/", {"src": "https://cdn.tailwindcss.com"}]
+external_script = ["https://tailwindcss.com/",
+                   {"src": "https://cdn.tailwindcss.com"}]
 external_stylesheets = ['/assets/custom.css']
 
-app = dash.Dash(__name__, external_scripts=external_script, external_stylesheets=external_stylesheets)
+app = dash.Dash(__name__, external_scripts=external_script,
+                external_stylesheets=external_stylesheets)
 app.scripts.config.serve_locally = True
 server = app.server
 
 debug_messages = []
-
-FOB_list = []
-FOD_list = []
-rFOB_list = []
-rFOD_list = []
-
 start = True
 interval = "5m"
 scan_status = ""
@@ -35,29 +30,34 @@ limit = 100
 max_threads = 10
 data_list = []
 
+
 @app.callback(Output("FOB-container", "children"),
-              Input("dummy-state", "children"))
+              Input("dummy-state3", "children"), prevent_initial_call=True)
 def update_FOB(n_clicks):
     global FOB_list
     return [html.Button(button, className="bg-[#0083FF] inter font-bold text-white py-2 px-4 rounded-md mr-2 w-36") for button in FOB_list]
 
+
 @app.callback(Output("FOD-container", "children"),
-              Input("dummy-state", "children"))
+              Input("dummy-state3", "children"), prevent_initial_call=True)
 def update_FOD(n_clicks):
     global FOD_list
     return [html.Button(button, className="bg-[#0083FF] inter font-bold text-white py-2 px-4 rounded-md mr-2 w-36") for button in FOD_list]
 
+
 @app.callback(Output("rFOD-container", "children"),
-              Input("dummy-state", "children"))
+              Input("dummy-state3", "children"), prevent_initial_call=True)
 def update_rFOD(n_clicks):
     global rFOD_list
     return [html.Button(button, className="bg-[#0083FF] inter font-bold text-white py-2 px-4 rounded-md mr-2 w-36") for button in rFOD_list]
 
+
 @app.callback(Output("rFOB-container", "children"),
-              Input("dummy-state", "children"))
+              Input("dummy-state3", "children"), prevent_initial_call=True)
 def update_rFOB(n_clicks):
     global rFOB_list
     return [html.Button(button, className="bg-[#0083FF] inter font-bold text-white py-2 px-4 rounded-md mr-2 w-36") for button in rFOB_list]
+
 
 def rsi_tradingview(ohlc: pd.DataFrame, period: int = 14, round_rsi: bool = True):
     delta = ohlc["close"].diff()
@@ -71,10 +71,10 @@ def rsi_tradingview(ohlc: pd.DataFrame, period: int = 14, round_rsi: bool = True
     down *= -1
     down = pd.Series.ewm(down, alpha=1/period).mean()
 
-    rsi = np.where(up == 0, 0, np.where(down == 0, 100, 100 - (100 / (1 + up / down))))
+    rsi = np.where(up == 0, 0, np.where(
+        down == 0, 100, 100 - (100 / (1 + up / down))))
 
     return np.round(rsi, 2) if round_rsi else rsi
-
 
 
 def fetch_data(symbol, interval):
@@ -96,13 +96,13 @@ def fetch_data(symbol, interval):
     df = df.tail(2)
     # last_five_rows = df.tail(20)
     # df = last_five_rows.head(2)
-    df.index = pd.MultiIndex.from_product([[symbol], df.index], names=["symbol", "timestamp"])
+    df.index = pd.MultiIndex.from_product(
+        [[symbol], df.index], names=["symbol", "timestamp"])
 
     return df
 
 
-
-def screen(symbol_list,df):
+def screen(symbol_list, df):
     global FOD_list, FOB_list, rFOD_list, rFOB_list
     FOD_list_local = []
     FOB_list_local = []
@@ -125,21 +125,21 @@ def screen(symbol_list,df):
             curma50 = cur.MA50
             rsi14 = cur.RSI14
 
-            ema4x8cross = prevema4 < prevma8 and curema4 > curma8 
-            reversecross = prevema4 > prevma8 and curema4 < curma8 
-            strongtrend = curma8 > curma20 > curma50 
+            ema4x8cross = prevema4 < prevma8 and curema4 > curma8
+            reversecross = prevema4 > prevma8 and curema4 < curma8
+            strongtrend = curma8 > curma20 > curma50
             retracetrend = curma20 > curma8 > curma50
             strongdowntrend = curma50 > curma20 > curma8
             retracedowntrend = curma50 > curma8 > curma20
             if ema4x8cross:
-                if strongtrend and rsi14>=60:
+                if strongtrend and rsi14 >= 60:
                     FOD_list_local.append(symbol)
-                elif retracetrend and rsi14>=50:
+                elif retracetrend and rsi14 >= 50:
                     FOB_list_local.append(symbol)
             if reversecross:
                 if strongdowntrend and rsi14 <= 40:
                     rFOD_list_local.append(symbol)
-                elif retracedowntrend and rsi14 <=50:
+                elif retracedowntrend and rsi14 <= 50:
                     rFOB_list_local.append(symbol)
         except:
             pass
@@ -147,8 +147,16 @@ def screen(symbol_list,df):
     FOD_list = FOD_list_local
     rFOD_list = rFOD_list_local
     rFOB_list = rFOB_list_local
-    print(f"LISTS: FOB: {FOB_list} \n, FOD: {FOD_list} \n rFOB: {rFOB_list} \n rFOD: {rFOD_list}")
+    print(
+        f"LISTS: \n FOB: {FOB_list} \n, FOD: {FOD_list} \n rFOB: {rFOB_list} \n rFOD: {rFOD_list}")
     print("Screen complete.")
+    return {
+        "FOB_list": FOB_list_local,
+        "FOD_list": FOD_list_local,
+        "rFOD_list": rFOD_list_local,
+        "rFOB_list": rFOB_list_local
+    }
+
 
 @app.callback(
     Output("btn-m5", "className"),
@@ -165,7 +173,7 @@ def screen(symbol_list,df):
 def toggle_active_state(btn_m5_clicks, btn_m15_clicks, btn_1h_clicks, btn_4h_clicks, btn_1d_clicks):
     global start
     button_states = [False, False, False, False, False]
-    
+
     if start:
         button_states[0] = True
         start = False
@@ -182,11 +190,14 @@ def toggle_active_state(btn_m5_clicks, btn_m15_clicks, btn_1h_clicks, btn_4h_cli
             button_states[3] = True
         elif button_id == "btn-1d":
             button_states[4] = True
-            
+
     return ["bg-[#0083FF] inter font-bold tracking-wider text-black py-2 px-4 rounded-md mr-2 active" if state else "bg-white inter font-bold tracking-wider text-black py-2 px-4 rounded-md mr-2" for state in button_states]
 
+
+# Storing the FOD, FOB, rFOD, rFOB lists in store.
 @app.callback(Output("dummy-state", "children"),
               Output("dummy-state2", "children"),
+              Output("intermediate-value", "data"),
               Input("btn-refresh", "n_clicks"),
               State("btn-m5", "className"),
               State("btn-m15", "className"),
@@ -194,15 +205,14 @@ def toggle_active_state(btn_m5_clicks, btn_m15_clicks, btn_1h_clicks, btn_4h_cli
               State("btn-4h", "className"),
               State("btn-1d", "className"),
               prevent_initial_call=True,
-            )
+              )
 def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, btn_1d_class):
     # get the value of the selected time interval
-    global interval, FOB_list, FOD_list, data_list, scan_status
+    # global interval, FOB_list, FOD_list, data_list, scan_status
     scan_status = "Scan Ongoing"
     # print("Set scan status to scan ongoing")
     data_list = []
 
-    
     # set the interval to active button
     active_class = "bg-[#0083FF] inter font-bold tracking-wider text-black py-2 px-4 rounded-md mr-2"
     if active_class in btn_m5_class:
@@ -219,10 +229,12 @@ def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, b
         interval = "1h"
         return interval, "No interval select, defaulting to 1h"
 
-    print(F"interval to run threads: {interval}")
-    # Run multi-thread
+    print(f"interval to run threads: {interval}")
+
+    # Run multi-threaded function to get data
     with ThreadPoolExecutor(max_workers=max_threads) as executor:
-        futures = [executor.submit(fetch_data, symbol, interval) for symbol in symbol_list]
+        futures = [executor.submit(fetch_data, symbol, interval)
+                   for symbol in symbol_list]
 
         for future in as_completed(futures):
             symbol_df = future.result()
@@ -230,12 +242,15 @@ def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, b
 
     data_df = pd.concat(data_list, axis=0)
 
-    # Run out setup screen
-    screen(symbol_list,data_df)
+    # Run screen function to filter cryptocurrency pairs
+    result = screen(symbol_list, data_df)
+    jsonified_result = json.dumps(result)
+    print("helllo returning")
+    print(result)
     scan_status = "Scan Complete"
-    # print("Set scan status to scan complete")
+    print(scan_status)
 
-    return interval,f"Finished scanning for {interval}"
+    return interval, f"Finished scanning for {interval}", jsonified_result
 
 
 # @app.callback(Output("debug-output", "children"),
@@ -255,82 +270,105 @@ def update_scan_status(n):
     # print(f"Scan status = {scan_status}")
     return scan_status
 
+
 app.layout = html.Div(
     [
         html.Div([
             # header
             html.Div([
-    
+
                 html.Div([
                     html.Div([
-                        html.H1('Kreios', className="text-[#0083FF] dmsans text-7xl font-bold mr-2"),
-                        html.Span('Screener', className="text-white dmsans text-7xl font-bold mr-2"),
+                        html.H1(
+                            'Kreios', className="text-[#0083FF] dmsans text-7xl font-bold mr-2"),
+                        html.Span(
+                            'Screener', className="text-white dmsans text-7xl font-bold mr-2"),
                     ], className="flex items-center justify-center "),
 
 
                     html.Div([
-                        html.Img(src=app.get_asset_url('bybitlogo.png'), alt='BYBIT', className='ml-auto'),
+                        html.Img(src=app.get_asset_url('bybitlogo.png'),
+                                 alt='BYBIT', className='ml-auto'),
                     ], className='flex '),
 
 
                     html.Div([
-                        html.P('Disclaimer: These are NOT signals and data is from Bybit.', className="text-center"),
-                        html.P('Please check accordingly.', className="text-center"),
+                        html.P(
+                            'Disclaimer: These are NOT signals and data is from Bybit.', className="text-center"),
+                        html.P('Please check accordingly.',
+                               className="text-center"),
                     ], className="text-white text-xl "),
 
 
-                    ],className="flex flex-col "),
-                    
+                ], className="flex flex-col "),
+
 
                 # v1.0
                 html.Div([
-                    html.Span('v1.0', className="text-white inter font-normal bg-[#0083FF]"),
-                ], className="flex items-start"), 
+                    html.Span(
+                        'v1.0', className="text-white inter font-normal bg-[#0083FF]"),
+                ], className="flex items-start"),
             ], className="flex flex-row mx-auto mt-32 mb-9"),
-                
+
             # buttons
             html.Div([
-                html.Button('M5', id="btn-m5", className="bg-[#0083FF] inter font-bold tracking-wider text-black py-2 px-4 rounded-md mr-2"),
-                html.Button('M15', id="btn-m15", className="bg-white inter font-bold tracking-wider text-black py-2 px-4 rounded-md mr-2"),
-                html.Button('1H', id="btn-1h", className="bg-white inter font-bold tracking-wider text-black py-2 px-4 rounded-md mr-2"),
-                html.Button('4H', id="btn-4h", className="bg-white inter font-bold tracking-wider text-black py-2 px-4 rounded-md mr-2"),
-                html.Button('1D', id="btn-1d", className="bg-white inter font-bold tracking-wider text-black py-2 px-4 rounded-md mr-2"),
-                html.Button('REFRESH', id="btn-refresh", className="bg-[#FF0000] inter font-bold tracking-wider text-white py-2 px-6 rounded-md"),
+                html.Button(
+                    'M5', id="btn-m5", className="bg-[#0083FF] inter font-bold tracking-wider text-black py-2 px-4 rounded-md mr-2"),
+                html.Button(
+                    'M15', id="btn-m15", className="bg-white inter font-bold tracking-wider text-black py-2 px-4 rounded-md mr-2"),
+                html.Button(
+                    '1H', id="btn-1h", className="bg-white inter font-bold tracking-wider text-black py-2 px-4 rounded-md mr-2"),
+                html.Button(
+                    '4H', id="btn-4h", className="bg-white inter font-bold tracking-wider text-black py-2 px-4 rounded-md mr-2"),
+                html.Button(
+                    '1D', id="btn-1d", className="bg-white inter font-bold tracking-wider text-black py-2 px-4 rounded-md mr-2"),
+                html.Button('REFRESH', id="btn-refresh",
+                            className="bg-[#FF0000] inter font-bold tracking-wider text-white py-2 px-6 rounded-md"),
 
             ], className="flex flex-row mx-auto mb-6"),
-            html.Div(id="scan-status", className="text-white font-bold dmsans text-xl mx-auto"),
-            dcc.Interval(id="interval-update-scan-status", interval=1 * 1000, n_intervals=0),  # 1 second interval
-             # FOB and FOD
+            html.Div(id="scan-status",
+                     className="text-white font-bold dmsans text-xl mx-auto"),
+            dcc.Interval(id="interval-update-scan-status",
+                         interval=1 * 1000, n_intervals=0),  # 1 second interval
+            # FOB and FOD
             html.Div([
-                html.Div("FOB", className="text-white font-bold dmsans text-4xl mx-auto"),
+                html.Div(
+                    "FOB", className="text-white font-bold dmsans text-4xl mx-auto"),
                 html.Div(
                     id="FOB-container",
                     className="grid grid-cols-5 gap-4 mt-4"
                 ),
-                html.Div("FOD", className="text-white font-bold dmsans text-4xl mx-auto"),
+                html.Div(
+                    "FOD", className="text-white font-bold dmsans text-4xl mx-auto"),
                 html.Div(
                     id="FOD-container",
                     className="grid grid-cols-5 gap-4 mt-4"
                 ),
-                html.Div("R-FOD", className="text-white font-bold dmsans text-4xl mx-auto"),
+                html.Div(
+                    "R-FOD", className="text-white font-bold dmsans text-4xl mx-auto"),
                 html.Div(
                     id="rFOD-container",
                     className="grid grid-cols-5 gap-4 mt-4"
                 ),
-                html.Div("R-FOB", className="text-white font-bold dmsans text-4xl mx-auto"),
+                html.Div(
+                    "R-FOB", className="text-white font-bold dmsans text-4xl mx-auto"),
                 html.Div(
                     id="rFOB-container",
                     className="grid grid-cols-5 gap-4 mt-4"
                 ),
             ], className="flex flex-col items-center"),
             html.Div(id="dummy-state"),
-            html.Div(id="dummy-state2",className="text-white"),
+            html.Div(id="dummy-state2", className="text-white"),
+            dcc.Store(id='intermediate-value'),
+            html.Div(id="dummy-state3", className="text-white"),
+
             # html.Div(id="debug-output",className="text-white"),
         ], className="flex flex-col", id="heading"),
 
-        html.Div(id="output",className="text-white"),
-        dcc.Interval(id="interval-update", interval=2 * 1000, n_intervals=0),  # 1 second interval
- # 1 second interval
+        html.Div(id="output", className="text-white"),
+        dcc.Interval(id="interval-update", interval=2 * 1000,
+                     n_intervals=0),  # 1 second interval
+        # 1 second interval
 
 
     ],
@@ -339,4 +377,4 @@ app.layout = html.Div(
 )
 
 if __name__ == '__main__':
-    app.run_server(debug=False) 
+    app.run_server(debug=False)
