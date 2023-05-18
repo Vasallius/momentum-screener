@@ -30,33 +30,38 @@ limit = 100
 max_threads = 10
 data_list = []
 
+# @app.callback(Output('dummy-state3', 'children'), Input('intermediate-value', 'data'), prevent_initial_call=True,)
+# def test(jsonified_cleaned_data):
+#     data_dict = json.loads(jsonified_cleaned_data)
+#     return f'{data_dict[FOB_list"]}'
+
 
 @app.callback(Output("FOB-container", "children"),
-              Input("dummy-state3", "children"), prevent_initial_call=True)
-def update_FOB(n_clicks):
-    global FOB_list
-    return [html.Button(button, className="bg-[#0083FF] inter font-bold text-white py-2 px-4 rounded-md mr-2 w-36") for button in FOB_list]
+              Input("pair_list", "data"), prevent_initial_call=True)
+def update_FOB(data):
+    data = json.loads(data)
+    return [html.Button(button, className="bg-[#0083FF] inter font-bold text-white py-2 px-4 rounded-md mr-2 w-36") for button in data["FOB_list"]]
 
 
 @app.callback(Output("FOD-container", "children"),
-              Input("dummy-state3", "children"), prevent_initial_call=True)
-def update_FOD(n_clicks):
-    global FOD_list
-    return [html.Button(button, className="bg-[#0083FF] inter font-bold text-white py-2 px-4 rounded-md mr-2 w-36") for button in FOD_list]
+              Input("pair_list", "data"), prevent_initial_call=True)
+def update_FOD(data):
+    data = json.loads(data)
+    return [html.Button(button, className="bg-[#0083FF] inter font-bold text-white py-2 px-4 rounded-md mr-2 w-36") for button in data["FOD_list"]]
 
 
 @app.callback(Output("rFOD-container", "children"),
-              Input("dummy-state3", "children"), prevent_initial_call=True)
-def update_rFOD(n_clicks):
-    global rFOD_list
-    return [html.Button(button, className="bg-[#0083FF] inter font-bold text-white py-2 px-4 rounded-md mr-2 w-36") for button in rFOD_list]
+              Input("pair_list", "data"), prevent_initial_call=True)
+def update_rFOD(data):
+    data = json.loads(data)
+    return [html.Button(button, className="bg-[#0083FF] inter font-bold text-white py-2 px-4 rounded-md mr-2 w-36") for button in data["rFOD_list"]]
 
 
 @app.callback(Output("rFOB-container", "children"),
-              Input("dummy-state3", "children"), prevent_initial_call=True)
-def update_rFOB(n_clicks):
-    global rFOB_list
-    return [html.Button(button, className="bg-[#0083FF] inter font-bold text-white py-2 px-4 rounded-md mr-2 w-36") for button in rFOB_list]
+              Input("pair_list", "data"), prevent_initial_call=True)
+def update_rFOB(data):
+    data = json.loads(data)
+    return [html.Button(button, className="bg-[#0083FF] inter font-bold text-white py-2 px-4 rounded-md mr-2 w-36") for button in data["FOB_list"]]
 
 
 def rsi_tradingview(ohlc: pd.DataFrame, period: int = 14, round_rsi: bool = True):
@@ -143,12 +148,9 @@ def screen(symbol_list, df):
                     rFOB_list_local.append(symbol)
         except:
             pass
-    FOB_list = FOB_list_local
-    FOD_list = FOD_list_local
-    rFOD_list = rFOD_list_local
-    rFOB_list = rFOB_list_local
+
     print(
-        f"LISTS: \n FOB: {FOB_list} \n, FOD: {FOD_list} \n rFOB: {rFOB_list} \n rFOD: {rFOD_list}")
+        f"LISTS: \n FOB: {FOB_list_local} \nFOD: {FOD_list_local} \nrFOB: {rFOB_list_local} \nrFOD: {rFOD_list_local}")
     print("Screen complete.")
     return {
         "FOB_list": FOB_list_local,
@@ -197,7 +199,7 @@ def toggle_active_state(btn_m5_clicks, btn_m15_clicks, btn_1h_clicks, btn_4h_cli
 # Storing the FOD, FOB, rFOD, rFOB lists in store.
 @app.callback(Output("dummy-state", "children"),
               Output("dummy-state2", "children"),
-              Output("intermediate-value", "data"),
+              Output("pair_list", "data"),
               Input("btn-refresh", "n_clicks"),
               State("btn-m5", "className"),
               State("btn-m15", "className"),
@@ -306,7 +308,7 @@ app.layout = html.Div(
                 # v1.0
                 html.Div([
                     html.Span(
-                        'v1.0', className="text-white inter font-normal bg-[#0083FF]"),
+                        'v1.1', className="text-white inter font-normal bg-[#0083FF]"),
                 ], className="flex items-start"),
             ], className="flex flex-row mx-auto mt-32 mb-9"),
 
@@ -359,7 +361,7 @@ app.layout = html.Div(
             ], className="flex flex-col items-center"),
             html.Div(id="dummy-state"),
             html.Div(id="dummy-state2", className="text-white"),
-            dcc.Store(id='intermediate-value'),
+            dcc.Store(id='pair_list'),
             html.Div(id="dummy-state3", className="text-white"),
 
             # html.Div(id="debug-output",className="text-white"),
