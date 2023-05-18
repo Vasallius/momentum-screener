@@ -1,1 +1,1 @@
-web: gunicorn --timeout 600 main:server
+web: gunicorn --worker-class gevent --timeout 600 main:server

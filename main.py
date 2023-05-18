@@ -5,6 +5,8 @@ import pandas as pd
 import numpy as np
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
+import gevent.pywsgi
+
 
 external_script = ["https://tailwindcss.com/",
                    {"src": "https://cdn.tailwindcss.com"}]
@@ -362,3 +364,5 @@ app.layout = html.Div(
 
 if __name__ == '__main__':
     app.run_server(debug=False)
+    http_server = gevent.pywsgi.WSGIServer(('0.0.0.0', 8050), server)
+    http_server.serve_forever()
