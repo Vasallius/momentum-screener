@@ -19,6 +19,7 @@ debug_messages = []
 start = True
 interval = "5m"
 scan_status = ""
+
 bybit = ccxt.bybit()
 markets = bybit.load_markets()
 
@@ -34,6 +35,8 @@ data_list = []
 # def test(jsonified_cleaned_data):
 #     data_dict = json.loads(jsonified_cleaned_data)
 #     return f'{data_dict[FOB_list"]}'
+
+# TODO: consolidate into one callback
 
 
 @app.callback(Output("FOB-container", "children"),
@@ -99,8 +102,6 @@ def fetch_data(symbol, interval):
     df["RSI14"] = rsi_tradingview(df)
 
     df = df.tail(2)
-    # last_five_rows = df.tail(20)
-    # df = last_five_rows.head(2)
     df.index = pd.MultiIndex.from_product(
         [[symbol], df.index], names=["symbol", "timestamp"])
 
@@ -108,13 +109,11 @@ def fetch_data(symbol, interval):
 
 
 def screen(symbol_list, df):
-    global FOD_list, FOB_list, rFOD_list, rFOB_list
     FOD_list_local = []
     FOB_list_local = []
     rFOD_list_local = []
     rFOB_list_local = []
     for symbol in symbol_list:
-        # print(f"Testing {symbol} for setups.")
         try:
             rows = df.loc[f'{symbol}:USDT']
             prev = rows.iloc[-2]
