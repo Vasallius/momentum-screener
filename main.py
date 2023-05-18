@@ -28,12 +28,6 @@ symbol_list = [symbol for symbol in markets.keys()]
 limit = 100
 
 max_threads = 10
-data_list = []
-
-# @app.callback(Output('dummy-state3', 'children'), Input('intermediate-value', 'data'), prevent_initial_call=True,)
-# def test(jsonified_cleaned_data):
-#     data_dict = json.loads(jsonified_cleaned_data)
-#     return f'{data_dict[FOB_list"]}'
 
 # TODO: consolidate into one callback
 
