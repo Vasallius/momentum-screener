@@ -163,3 +163,4 @@ main2.py
 *.ipynb
 glc.py
 *.csv
+.vscode
