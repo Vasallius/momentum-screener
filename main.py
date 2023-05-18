@@ -245,13 +245,11 @@ def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, b
 
     # Run screen function to filter cryptocurrency pairs
     result = screen(symbol_list, data_df)
-    jsonified_result = json.dumps(result)
-    print("helllo returning")
-    print(result)
+    result = json.dumps(result)
     scan_status = "Scan Complete"
     print(scan_status)
 
-    return interval, f"Finished scanning for {interval}", jsonified_result
+    return interval, f"Finished scanning for {interval}", result
 
 
 # @app.callback(Output("debug-output", "children"),
