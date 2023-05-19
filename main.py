@@ -205,13 +205,9 @@ def refresh(n_clicks):
               prevent_initial_call=True,
               )
 def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, btn_1d_class):
-    # get the value of the selected time interval
-    # global interval, FOB_list, FOD_list, data_list, scan_status
-    scan_status = "Scan Ongoing"
-    # print("Set scan status to scan ongoing")
     data_list = []
 
-    # set the interval to active button
+    # Set the interval to active button
     active_class = "bg-[#0083FF] inter font-bold tracking-wider text-black py-2 px-4 rounded-md mr-2"
     if active_class in btn_m5_class:
         interval = "5m"
@@ -243,20 +239,7 @@ def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, b
     # Run screen function to filter cryptocurrency pairs
     result = screen(symbol_list, data_df)
     result = json.dumps(result)
-    scan_status = "Scan Complete"
-    print(scan_status)
-
     return interval, f"Finished scanning for {interval}", result, "Scan Complete"
-
-
-# @app.callback(Output("debug-output", "children"),
-#               Input("interval-update", "n_intervals"))
-# def update_debug_output(n):
-#     global debug_messages
-#     # Convert the list of debug messages into a list of html.P elements
-#     debug_output = [html.P(message) for message in debug_messages]
-#     debug_messages.clear() # Clear debug messages after displaying
-#     return debug_output
 
 
 app.layout = html.Div(
