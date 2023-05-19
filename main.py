@@ -182,10 +182,20 @@ def update_button_style(btn_m5, btn_m15, btn_1h, btn_4h, btn_1d):
         return reset_style, reset_style, reset_style, reset_style, button_style
 
 
+# This callback simply sets scan status to "Scan Ongoing" upon refresh button click
+@app.callback(Output("scan-status", "children", allow_duplicate=True),
+              Input("btn-refresh", "n_clicks"),
+              prevent_initial_call=True,
+              )
+def refresh(n_clicks):
+    return "Scan Ongoing"
+
+
 # Storing the FOD, FOB, rFOD, rFOB lists in store.
 @app.callback(Output("dummy-state", "children"),
               Output("dummy-state2", "children"),
               Output("pair_list", "data"),
+              Output("scan-status", "children"),
               Input("btn-refresh", "n_clicks"),
               State("btn-m5", "className"),
               State("btn-m15", "className"),
@@ -236,7 +246,7 @@ def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, b
     scan_status = "Scan Complete"
     print(scan_status)
 
-    return interval, f"Finished scanning for {interval}", result
+    return interval, f"Finished scanning for {interval}", result, "Scan Complete"
 
 
 # @app.callback(Output("debug-output", "children"),
@@ -247,14 +257,6 @@ def refresh(n_clicks, btn_m5_class, btn_m15_class, btn_1h_class, btn_4h_class, b
 #     debug_output = [html.P(message) for message in debug_messages]
 #     debug_messages.clear() # Clear debug messages after displaying
 #     return debug_output
-
-@app.callback(Output("scan-status", "children"),
-              Input("interval-update-scan-status", "n_intervals"))
-def update_scan_status(n):
-    # print("Updating Scan Status.")
-    global scan_status
-    # print(f"Scan status = {scan_status}")
-    return scan_status
 
 
 app.layout = html.Div(
