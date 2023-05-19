@@ -17,18 +17,13 @@ app = dash.Dash(__name__, external_scripts=external_script,
 app.scripts.config.serve_locally = True
 server = app.server
 
-# debug_messages = []
-start = True
-scan_status = ""
-
 bybit = ccxt.bybit()
 markets = bybit.load_markets()
 
 symbol_list = [symbol for symbol in markets.keys()]
 
-
+# Specifies number of candles to fetch and max threads
 limit = 100
-
 max_threads = 10
 
 # TODO: consolidate into one callback
@@ -332,16 +327,9 @@ app.layout = html.Div(
             html.Div(id="dummy-state2", className="text-white"),
             dcc.Store(id='pair_list'),
             html.Div(id="dummy-state3", className="text-white"),
-
-            # html.Div(id="debug-output",className="text-white"),
         ], className="flex flex-col", id="heading"),
 
         html.Div(id="output", className="text-white"),
-        dcc.Interval(id="interval-update", interval=2 * 1000,
-                     n_intervals=0),  # 1 second interval
-        # 1 second interval
-
-
     ],
     className="min-h-screen flex flex-col",
     style={'background-color': '#1E1E1E'}
