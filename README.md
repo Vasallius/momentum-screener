@@ -1,5 +1,4 @@
-<!-- ABOUT THE PROJECT -->
-## About The Project
+## Momentum Screener
 
 This is free web-based momentum screener to help people screen momentum setups easily and effectively across different timeframes. Check out the screener here: https://flask-production-5636.up.railway.app/ 
 or if you prefer a faster local version check out how to use section.
